@@ -35,6 +35,9 @@ void setup() {
   modEngine.addSource(&ampEnv);
   modEngine.addRoute(&ampEnv, sineWave.getAmplitudePtr(), 1.0f);
 
+  // Start oscillator at full amplitude
+  sineWave.setAmplitude(1.0f, true); // Constant 1.0f
+
   audioEngine.addSource(&sineWave);
   audioEngine.addEffect(&limiter);
   audioEngine.start();
@@ -64,15 +67,12 @@ void processCommand(const String& command) {
     }
   }
   else if (command.startsWith("amp")) {
-    bool immediate = command.endsWith("i");
-    String valueStr = command.substring(4, immediate ? command.length()-1 : command.length());
+    String valueStr = command.substring(4);
     float amp = valueStr.toFloat();
-    
     if (amp >= 0.0f && amp <= 1.0f) {
-      sineWave.setAmplitude(amp, immediate);
-      Serial.print("Amplitude set to: ");
-      Serial.print(amp);
-      Serial.println(immediate ? " (immediate)" : " (smoothed)");
+        ampEnv.setSustain(amp); // Control envelope sustain
+        Serial.print("Sustain level set to: ");
+        Serial.println(amp);
     } else {
       Serial.println("Invalid amplitude (0.0-1.0)");
     }

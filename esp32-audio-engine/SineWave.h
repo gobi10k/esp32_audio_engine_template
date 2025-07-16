@@ -8,8 +8,9 @@
 
 class SineWave : public AudioSource {
 public:
-  SineWave(float frequency = 440.0f, float amplitude = 0.5f)
-      : frequency(frequency, 0.02f), amplitude(amplitude, 0.02f), 
+  SineWave(float frequency = 440.0f, float amplitude = 1.0f) // Start at 1.0f
+      : frequency(frequency, 0.02f),
+        amplitude(amplitude, 0.0f), // No smoothing for amplitude
         phase(0.0f), sampleRate(44100.0f) {
   }
 

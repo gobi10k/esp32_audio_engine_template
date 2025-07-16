@@ -58,7 +58,7 @@ public:
     if (!active) return;
 
     // Update modulation engine
-    modEngine.update(1.0f / sampleRate);
+    modEngine.update((float)BLOCK_SIZE / sampleRate);
 
     float mixBuffer[BLOCK_SIZE] = {0.0f};
 

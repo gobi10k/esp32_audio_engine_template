@@ -22,7 +22,7 @@ public:
       .dma_buf_len = BLOCK_SIZE
     };
     i2s_driver_install(I2S_NUM, &i2s_config, 0, NULL);
-    i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN); // GPIO25
+    i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN); // Enable both channels
   }
 
   ~DACOutput() {
