@@ -7,6 +7,7 @@
 #include <mutex>
 #include <algorithm>
 #include <cmath>
+#include "ModulationEngine.h"
 
 #define BLOCK_SIZE 64
 
@@ -34,8 +35,10 @@ public:
 
 class AudioEngine {
 public:
-  AudioEngine(AudioOutput& output) : output(output), sampleRate(44100.0f), 
+  AudioEngine(AudioOutput& output) : output(output), sampleRate(44100.0f),
                                     active(false), peakLevel(0.0f), rmsLevel(0.0f) {}
+
+  ModulationEngine& getModulationEngine() { return modEngine; }
 
   void start() {
     std::lock_guard<std::mutex> lock(mutex);
@@ -53,6 +56,9 @@ public:
 
   void renderBlock() {
     if (!active) return;
+
+    // Update modulation engine
+    modEngine.update(1.0f / sampleRate);
 
     float mixBuffer[BLOCK_SIZE] = {0.0f};
 
@@ -133,6 +139,7 @@ private:
   AudioOutput& output;
   std::vector<AudioSource*> sources;
   std::vector<AudioEffect*> effects;
+  ModulationEngine modEngine;
   std::mutex mutex;
   float sampleRate;
   bool active;

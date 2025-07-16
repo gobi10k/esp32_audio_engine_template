@@ -2,6 +2,7 @@
 #include "DACOutput.h"
 #include "SineWave.h"
 #include "Limiter.h"
+#include "ADSR.h"
 
 // Add this LED_BUILTIN definition for ESP32 boards
 #ifndef LED_BUILTIN
@@ -10,8 +11,9 @@
 
 DACOutput dacOutput;
 AudioEngine audioEngine(dacOutput);
-SineWave sineWave(440.0f, 0.5f);
+SineWave sineWave(440.0f, 0.0f); // Start with 0 amplitude
 Limiter limiter(0.95f, 0.005f);
+ADSR ampEnv;
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);  // Initialize LED pin
@@ -19,7 +21,19 @@ void setup() {
   
   Serial.begin(115200);
   Serial.println("ESP32 Professional Audio Engine");
-  Serial.println("Commands: start, stop, freq <f>[i], amp <a>[i], peak, rms, stats");
+  Serial.println("Commands: start, stop, freq <f>[i], amp <a>[i], noteon, noteoff, peak, rms, stats");
+
+  // Setup ADSR
+  ampEnv.setAttack(0.01f);
+  ampEnv.setDecay(0.2f);
+  ampEnv.setSustain(0.5f);
+  ampEnv.setRelease(1.0f);
+  ampEnv.setSampleRate(44100.0f);
+
+  // Add to modulation engine
+  ModulationEngine& modEngine = audioEngine.getModulationEngine();
+  modEngine.addSource(&ampEnv);
+  modEngine.addRoute(&ampEnv, sineWave.getAmplitudePtr(), 1.0f);
 
   audioEngine.addSource(&sineWave);
   audioEngine.addEffect(&limiter);
@@ -62,6 +76,14 @@ void processCommand(const String& command) {
     } else {
       Serial.println("Invalid amplitude (0.0-1.0)");
     }
+  }
+  else if (command == "noteon") {
+    ampEnv.noteOn();
+    Serial.println("Note On");
+  }
+  else if (command == "noteoff") {
+    ampEnv.noteOff();
+    Serial.println("Note Off");
   }
   else if (command == "peak") {
     Serial.print("Peak level: ");

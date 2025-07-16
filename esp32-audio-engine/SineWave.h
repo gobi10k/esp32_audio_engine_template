@@ -45,6 +45,8 @@ public:
     }
   }
 
+  float* getAmplitudePtr() { return amplitude.getPtr(); }
+
 private:
   SmoothedParameter frequency;
   SmoothedParameter amplitude;
