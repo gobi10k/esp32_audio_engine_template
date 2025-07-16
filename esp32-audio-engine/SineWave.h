@@ -11,7 +11,6 @@ public:
     SineWave(float frequency = 440.0f, float amplitude = 1.0f)
         : frequency(frequency, 0.02f),
           amplitude(amplitude, 0.0f), // No smoothing for amplitude
-          baseAmplitude(1.0f), // New base amplitude
           phase(0.0f), sampleRate(44100.0f) {
     }
 
@@ -22,12 +21,13 @@ public:
     }
 
     void renderBlock(float* buffer, size_t blockSize) override {
+        float currentAmp = amplitude.next();
         for (size_t i = 0; i < blockSize; i++) {
             phase += 2.0f * M_PI * frequency.next() / sampleRate;
             if (phase >= 2.0f * M_PI) {
                 phase -= 2.0f * M_PI;
             }
-            buffer[i] = sinf(phase) * amplitude.next();
+            buffer[i] = sinf(phase) * currentAmp;
         }
     }
 
@@ -40,7 +40,6 @@ public:
     }
 
     void setAmplitude(float amp, bool immediate = false) {
-        baseAmplitude = amp; // Store base amplitude
         if (immediate) {
             amplitude.setTargetImmediate(amp);
         } else {
@@ -48,12 +47,11 @@ public:
         }
     }
 
-    float* getAmplitudePtr() { return &baseAmplitude; } // Return pointer to base amplitude
+    float* getAmplitudePtr() { return amplitude.getPtr(); }
 
 private:
     SmoothedParameter frequency;
     SmoothedParameter amplitude;
-    float baseAmplitude; // New member for base amplitude
     float phase;
     float sampleRate;
 };

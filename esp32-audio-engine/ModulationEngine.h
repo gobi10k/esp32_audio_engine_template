@@ -43,40 +43,15 @@ void ModulationEngine::addRoute(ModulationSource* src, float* targetParam, float
 }
 
 void ModulationEngine::update(float dt) {
-    // 1. Backup original parameter values
-    std::vector<float> originalValues;
-    for (auto& route : routes) {
-        if (route.targetParam) {
-            originalValues.push_back(*route.targetParam);
-        }
-    }
-
-    // 2. Reset parameters to their base values (1.0 for multiplicative)
-    for (auto& route : routes) {
-        if (route.targetParam) {
-            *route.targetParam = 1.0f; // Base value for multiplication
-        }
-    }
-
-    // 3. Update all modulation sources
+    // 1. Update all modulation sources
     for (auto* src : sources) {
         src->update(dt);
     }
 
-    // 4. Apply each modulation route multiplicatively
-    size_t i = 0;
+    // 2. Apply each modulation route to its target parameter
     for (auto& route : routes) {
         if (route.source && route.targetParam) {
-            *route.targetParam *= (route.source->getValue() * route.depth);
-            i++;
-        }
-    }
-
-    // 5. Restore original values multiplied by modulation
-    i = 0;
-    for (auto& route : routes) {
-        if (route.targetParam) {
-            *route.targetParam *= originalValues[i++];
+            *route.targetParam = route.source->getValue() * route.depth;
         }
     }
 }

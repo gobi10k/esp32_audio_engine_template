@@ -64,8 +64,12 @@ public:
         }
     }
 
+    bool isActive() const {
+        return state != IDLE;
+    }
+
     float getValue() const override {
-        return value;
+        return isActive() ? value : 0.0f; // Return 0 when inactive
     }
 
 private:

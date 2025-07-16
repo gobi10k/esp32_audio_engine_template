@@ -35,8 +35,11 @@ void setup() {
   modEngine.addSource(&ampEnv);
   modEngine.addRoute(&ampEnv, sineWave.getAmplitudePtr(), 1.0f);
 
-  // Set base amplitude (this will be multiplied by envelope)
-  sineWave.setAmplitude(1.0f, true);
+  // Start with sine wave at 0 amplitude
+  sineWave.setAmplitude(0.0f, true);
+
+  // ADSR will control the amplitude directly
+  modEngine.addRoute(&ampEnv, sineWave.getAmplitudePtr(), 1.0f);
 
   audioEngine.addSource(&sineWave);
   audioEngine.addEffect(&limiter);
