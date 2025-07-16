@@ -35,8 +35,8 @@ void setup() {
   modEngine.addSource(&ampEnv);
   modEngine.addRoute(&ampEnv, sineWave.getAmplitudePtr(), 1.0f);
 
-  // Start oscillator at full amplitude
-  sineWave.setAmplitude(1.0f, true); // Constant 1.0f
+  // Set base amplitude (this will be multiplied by envelope)
+  sineWave.setAmplitude(1.0f, true);
 
   audioEngine.addSource(&sineWave);
   audioEngine.addEffect(&limiter);
