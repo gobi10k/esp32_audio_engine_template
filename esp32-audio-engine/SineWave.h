@@ -11,6 +11,7 @@ public:
     SineWave(float frequency = 440.0f, float amplitude = 1.0f)
         : frequency(frequency, 0.02f),
           amplitude(amplitude, 0.0f), // No smoothing for amplitude
+          baseAmplitude(1.0f),
           phase(0.0f), sampleRate(44100.0f) {
     }
 
@@ -27,7 +28,7 @@ public:
             if (phase >= 2.0f * M_PI) {
                 phase -= 2.0f * M_PI;
             }
-            buffer[i] = sinf(phase) * currentAmp;
+            buffer[i] = sinf(phase) * baseAmplitude * currentAmp;
         }
     }
 
@@ -52,6 +53,7 @@ public:
 private:
     SmoothedParameter frequency;
     SmoothedParameter amplitude;
+    float baseAmplitude;
     float phase;
     float sampleRate;
 };

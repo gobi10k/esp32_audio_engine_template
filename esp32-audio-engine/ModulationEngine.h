@@ -51,7 +51,10 @@ void ModulationEngine::update(float dt) {
     // 2. Apply each modulation route to its target parameter
     for (auto& route : routes) {
         if (route.source && route.targetParam) {
-            *route.targetParam = route.source->getValue() * route.depth;
+            // CHANGE: Multiplicative modulation instead of additive
+            float baseValue = *route.targetParam;
+            float modValue = route.source->getValue() * route.depth;
+            *route.targetParam = baseValue * modValue; // Multiplication
         }
     }
 }
